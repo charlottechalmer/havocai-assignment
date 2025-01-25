@@ -12,8 +12,17 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error reading input file: %+v\n", err)
 	}
 
-	err = parser.ParseXML(input)
+	xmlPatients, err := parser.ParseXML(input)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error deserializing: %+v\n", err)
+		fmt.Fprintf(os.Stderr, "error parsing XML: %+v\n", err)
 	}
+
+	fmt.Printf("xml patients: %+v\n", xmlPatients)
+
+	jsonPatients, err := parser.ConvertToJSON(xmlPatients)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error converting to JSON: %+v\n", err)
+	}
+
+	fmt.Printf("patients: %+v\n", jsonPatients)
 }
