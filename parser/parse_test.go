@@ -3,6 +3,7 @@ package parser
 import (
 	"encoding/xml"
 	"havocai-assignment/models"
+	"os"
 	"testing"
 	"time"
 
@@ -97,20 +98,14 @@ func TestTranslateAge(t *testing.T) {
 
 func TestParseXML(t *testing.T) {
 	tests := []struct {
-		name        string
-		input       string
-		expected    *models.XMLPatients
-		expectedErr bool
+		name          string
+		inputFilePath string
+		expected      *models.XMLPatients
+		expectedErr   bool
 	}{
 		{
-			name: "valid single patient",
-			input: `<Patients>
-						<Patient ID="12345">
-							<FirstName>Charlotte</FirstName>
-							<LastName>Taylor</LastName>
-							<DateOfBirth>1993-07-06</DateOfBirth>
-						</Patient>
-					</Patients>`,
+			name:          "valid single patient",
+			inputFilePath: "../test/testdata/single_patient.xml",
 			expected: &models.XMLPatients{
 				XMLName: xml.Name{Local: "Patients"},
 				Patients: []models.XMLPatient{
@@ -125,19 +120,8 @@ func TestParseXML(t *testing.T) {
 			expectedErr: false,
 		},
 		{
-			name: "valid multiple patient",
-			input: `<Patients>
-						<Patient ID="12345">
-							<FirstName>Charlotte</FirstName>
-							<LastName>Taylor</LastName>
-							<DateOfBirth>1993-07-06</DateOfBirth>
-						</Patient>
-						<Patient ID="53425">
-							<FirstName>Jane</FirstName>
-							<LastName>Doe</LastName>
-							<DateOfBirth>1920-11-25</DateOfBirth>
-						</Patient>
-					</Patients>`,
+			name:          "valid multiple patient",
+			inputFilePath: "../test/testdata/multiple_patients.xml",
 			expected: &models.XMLPatients{
 				XMLName: xml.Name{Local: "Patients"},
 				Patients: []models.XMLPatient{
@@ -158,21 +142,24 @@ func TestParseXML(t *testing.T) {
 			expectedErr: false,
 		},
 		{
-			name:        "invalid xml",
-			input:       `<Patients><Patient><FirstName>John</FirstName></Patients>`,
-			expected:    nil,
-			expectedErr: true,
+			name:          "invalid xml",
+			inputFilePath: "../test/testdata/invalid_xml.xml",
+			expected:      nil,
+			expectedErr:   true,
 		},
 		{
-			name:        "empty",
-			input:       ``,
-			expected:    nil,
-			expectedErr: true,
+			name:          "empty",
+			inputFilePath: "../test/testdata/empty.xml",
+			expected:      nil,
+			expectedErr:   true,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			actual, err := ParseXML([]byte(test.input))
+			xmlData, err := os.ReadFile(test.inputFilePath)
+			require.NoError(t, err)
+
+			actual, err := ParseXML(xmlData)
 
 			if test.expectedErr {
 				require.Error(t, err)
@@ -184,4 +171,58 @@ func TestParseXML(t *testing.T) {
 		})
 	}
 
+}
+
+func TestConvertToJSON(t *testing.T) {
+	tests := []struct {
+		name                       string
+		inputXMLFilePath           string
+		expectedJSONOutputFilePath string
+		expectedErr                bool
+	}{
+		{
+			name:                       "provided input and output",
+			inputXMLFilePath:           "../test/testdata/input.xml",
+			expectedJSONOutputFilePath: "../test/testdata/output.json",
+			expectedErr:                false,
+		},
+		{
+			name:                       "valid single patient",
+			inputXMLFilePath:           "../test/testdata/single_patient.xml",
+			expectedJSONOutputFilePath: "../test/testdata/single_patient.json",
+			expectedErr:                false,
+		},
+		{
+			name:                       "valid multiple patients",
+			inputXMLFilePath:           "../test/testdata/multiple_patients.xml",
+			expectedJSONOutputFilePath: "../test/testdata/multiple_patients.json",
+			expectedErr:                false,
+		},
+		{
+			name:                       "invalid date",
+			inputXMLFilePath:           "../test/testdata/invalid_date.xml",
+			expectedJSONOutputFilePath: "../test/testdata/error.json",
+			expectedErr:                true,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			xmlData, err := os.ReadFile(test.inputXMLFilePath)
+			require.NoError(t, err)
+
+			xmlPatients, err := ParseXML(xmlData)
+			require.NoError(t, err)
+
+			actual, err := ConvertToJSON(xmlPatients)
+			if test.expectedErr {
+				require.Error(t, err)
+				require.Nil(t, actual)
+			} else {
+				require.NoError(t, err)
+				expectedJSON, err := os.ReadFile(test.expectedJSONOutputFilePath)
+				require.NoError(t, err)
+				require.JSONEq(t, string(expectedJSON), string(actual))
+			}
+		})
+	}
 }

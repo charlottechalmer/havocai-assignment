@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"havocai-assignment/models"
@@ -39,7 +40,7 @@ func translateAge(dateOfBirth string) (int, error) {
 	return age, nil
 }
 
-func ConvertToJSON(input *models.XMLPatients) (*models.JSONPatients, error) {
+func ConvertToJSON(input *models.XMLPatients) ([]byte, error) {
 	jsonPatients := &models.JSONPatients{}
 	for _, patient := range input.Patients {
 		name := translateName(patient.FirstName, patient.LastName)
@@ -54,5 +55,11 @@ func ConvertToJSON(input *models.XMLPatients) (*models.JSONPatients, error) {
 			Age:  age,
 		})
 	}
-	return jsonPatients, nil
+
+	jsonOutput, err := json.MarshalIndent(jsonPatients, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonOutput, nil
 }
