@@ -2,22 +2,25 @@ package parser
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"havocai-assignment/models"
 	"strings"
 	"time"
 )
 
-func ParseXML(input []byte) (*models.XMLPatients, error) {
-	var patients *models.XMLPatients
-	err := xml.Unmarshal(input, &patients)
-	if err != nil {
-		return nil, err
-	}
-
-	return patients, nil
+func ParseXML(input []byte) ([]map[string]string, error) {
+	//use xml.Decoder to create a decoder from a Reader, and then call decoder.Token() in a loop to iterate through all the elements of the xml document. You will need a type switch on the token to do anything useful (e.g. on StartToken, EndToken,etc.).
 }
+
+// func ParseXML(input []byte) (*models.XMLPatients, error) {
+// 	var patients *models.XMLPatients
+// 	err := xml.Unmarshal(input, &patients)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return patients, nil
+// }
 
 func translateName(firstName string, lastName string) string {
 	sanitizedFirstName := strings.TrimSpace(firstName)

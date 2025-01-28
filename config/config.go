@@ -12,7 +12,7 @@ func LoadFile(filePath string) (*models.Config, error) {
 		return nil, err
 	}
 
-	var config models.Config
+	var config *models.Config
 	err = json.Unmarshal(data, &config)
 	return config, err
 }

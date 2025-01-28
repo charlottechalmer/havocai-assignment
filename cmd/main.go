@@ -2,27 +2,33 @@ package main
 
 import (
 	"fmt"
-	"havocai-assignment/parser"
+	"havocai-assignment/config"
 	"os"
 )
 
 func main() {
+	config, err := config.LoadFile("config/config.json")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error loading config file: %+v\n", err)
+	}
+	fmt.Printf("config: %+v\n", config)
+
 	input, err := os.ReadFile("test/testdata/input.xml")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error reading input file: %+v\n", err)
 	}
 
-	xmlPatients, err := parser.ParseXML(input)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error parsing XML: %+v\n", err)
-	}
+	// xmlPatients, err := parser.ParseXML(input)
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "error parsing XML: %+v\n", err)
+	// }
 
-	fmt.Printf("xml patients: %+v\n", xmlPatients)
+	// fmt.Printf("xml patients: %+v\n", xmlPatients)
 
-	jsonPatients, err := parser.ConvertToJSON(xmlPatients)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "error converting to JSON: %+v\n", err)
-	}
+	// jsonPatients, err := parser.ConvertToJSON(xmlPatients)
+	// if err != nil {
+	// 	fmt.Fprintf(os.Stderr, "error converting to JSON: %+v\n", err)
+	// }
 
-	fmt.Printf("patients: %+v\n", string(jsonPatients))
+	// fmt.Printf("patients: %+v\n", string(jsonPatients))
 }
