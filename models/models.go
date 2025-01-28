@@ -6,17 +6,28 @@ type Config struct {
 }
 
 type Transformation struct {
-	Type   string                 `json:"type"`
-	Params map[string]interface{} `json:"params"`
+	Type   string `json:"type"`
+	Params Params `json:"params"`
 }
+
+type Params struct {
+	Fields []string               `json:"fields"`
+	Extras map[string]interface{} `json:"extras"`
+}
+
+// type Transformation struct {
+// 	Type   string                 `json:"type"`
+// 	Params map[string]interface{} `json:"params"`
+// }
 
 /*
  examples of transformations & info needed
  - concat
-   - need: list of elements to concat
+   - need:
+     - fields: list of elements to concat
  - calculate
    - need
-     - operator: +, -, \, *, %
-     - input:
+     - fields: list of elemetns for calculation
+     - operation: subtract, add, multiply, divide, time_difference,
 
 */

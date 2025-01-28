@@ -126,15 +126,7 @@ func applyTransformations(input []map[string]interface{}, cfg *models.Config) ([
 }
 
 func concatTransformation(record map[string]interface{}, transformation models.Transformation) (string, error) {
-	fieldsIface, ok := transformation.Params["fields"]
-	if !ok {
-		return "", fmt.Errorf("missing fields param")
-	}
-
-	fields, ok := fieldsIface.([]string)
-	if !ok {
-		return "", fmt.Errorf("fields should be an array of strings")
-	}
+	fields := transformation.Params.Fields
 
 	fieldValues := []string{}
 	for _, field := range fields {
@@ -153,11 +145,15 @@ func concatTransformation(record map[string]interface{}, transformation models.T
 	}
 
 	separator := ""
-	if separatorIface, ok := transformation.Params["separator"]; ok {
+	if separatorIface, ok := transformation.Params.Extras["separator"]; ok {
 		separator, _ = separatorIface.(string)
 	}
 	return strings.Join(fieldValues, separator), nil
 }
+
+// func calculateTransformation(record map[string]interface, transformation models.Transformation) (interface{}, error) {
+
+// }
 
 ///////////////////////////////////////////////////////
 

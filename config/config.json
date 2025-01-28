@@ -13,7 +13,9 @@
                   "FirstName",
                   "LastName"
               ],
-              "separator": " "
+              "extras": {
+                  "separator": " "
+              }
           }
       }
   }

@@ -25,12 +25,14 @@ func TestConcatTransformation(t *testing.T) {
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]interface{}{
-					"fields": []string{
+				Params: models.Params{
+					Fields: []string{
 						"FirstName",
 						"LastName",
 					},
-					"separator": " ",
+					Extras: map[string]interface{}{
+						"separator": " ",
+					},
 				},
 			},
 			expected:    "Charlotte Taylor",
@@ -44,12 +46,14 @@ func TestConcatTransformation(t *testing.T) {
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]interface{}{
-					"fields": []string{
+				Params: models.Params{
+					Fields: []string{
 						"FirstName",
 						"LastName",
 					},
-					"separator": " ",
+					Extras: map[string]interface{}{
+						"separator": " ",
+					},
 				},
 			},
 			expected:    "Charlotte Taylor",
@@ -64,13 +68,15 @@ func TestConcatTransformation(t *testing.T) {
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]interface{}{
-					"fields": []string{
+				Params: models.Params{
+					Fields: []string{
 						"Street",
 						"CityState",
 						"ZipCode",
 					},
-					"separator": "\n",
+					Extras: map[string]interface{}{
+						"separator": "\n",
+					},
 				},
 			},
 			expected: `1234 Foo Ave
@@ -85,12 +91,14 @@ FooBar, WI
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]interface{}{
-					"fields": []string{
+				Params: models.Params{
+					Fields: []string{
 						"FirstName",
 						"LastName",
 					},
-					"separator": " ",
+					Extras: map[string]interface{}{
+						"separator": " ",
+					},
 				},
 			},
 			expected:    "",
@@ -104,12 +112,14 @@ FooBar, WI
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]interface{}{
-					"fields": []string{
+				Params: models.Params{
+					Fields: []string{
 						"Field1",
 						"Field2",
 					},
-					"separator": " ",
+					Extras: map[string]interface{}{
+						"separator": " ",
+					},
 				},
 			},
 			expected:    "",
@@ -122,9 +132,11 @@ FooBar, WI
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]interface{}{
-					"fields":    []string{""},
-					"separator": " ",
+				Params: models.Params{
+					Fields: []string{""},
+					Extras: map[string]interface{}{
+						"separator": " ",
+					},
 				},
 			},
 			expected:    "",

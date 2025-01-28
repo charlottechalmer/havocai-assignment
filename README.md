@@ -194,6 +194,6 @@ type Transformation struct {
       }
   }
 ```
-we now can use this data structure to build out greater functionality of the transformations, e.g. allowing for different data types in params, adding a `separator` param for the `concat` transformation that dictates how to combine the strings in `fields`.
+we now can use this data structure to build out greater functionality of the transformations, e.g. allowing for different data types in params, adding a `separator` param for the `concat` transformation that dictates how to combine the strings in `fields`. While the code now requires many more type assertions, making it a bit less readable, this is a necessary trade-off in order to ensure extensibility of our config file.
 This was a required change especially when trying to make the transformation responsible for transforming `DateOfBirth` into `age`.
 
