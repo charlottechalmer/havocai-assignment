@@ -111,14 +111,11 @@ func applyTransformations(input []map[string]interface{}, cfg *models.Config) ([
 		for jsonField, transformation := range cfg.Transformations {
 			switch transformation.Type {
 			case "concat":
-				fields := strings.Split(transformation.Params["fields"], ",")
-				fieldValues := []string{}
-				for _, field := range fields {
-					// get value from input
-					fieldValues = append(fieldValues, record[field].(string))
+				val, err := concatTransformation(record, transformation)
+				if err != nil {
+					return nil, err
 				}
-				// concat with separator
-				transformed[jsonField] = strings.Join(fieldValues, transformation.Params["separator"])
+				transformed[jsonField] = val
 			}
 
 		}
@@ -128,13 +125,29 @@ func applyTransformations(input []map[string]interface{}, cfg *models.Config) ([
 	return output, nil
 }
 
-///////////////////////////////////////////////////////
+func concatTransformation(record map[string]interface{}, transformation models.Transformation) (string, error) {
+	fields := strings.Split(transformation.Params["fields"], ",")
+	fieldValues := []string{}
 
-func translateName(firstName string, lastName string) string {
-	sanitizedFirstName := strings.TrimSpace(firstName)
-	sanitizedLastName := strings.TrimSpace(lastName)
-	return strings.TrimSpace(fmt.Sprintf("%v %v", sanitizedFirstName, sanitizedLastName))
+	for _, field := range fields {
+		// get value from input
+		value, ok := record[strings.TrimSpace(field)]
+		if !ok {
+			return "", fmt.Errorf("field %v not found in input", field)
+		}
+
+		strVal, ok := value.(string)
+		if !ok {
+			return "", fmt.Errorf("field %v is not a string, cannot concat", field)
+		}
+
+		fieldValues = append(fieldValues, strVal)
+	}
+	separator := transformation.Params["separator"]
+	return strings.Join(fieldValues, separator), nil
 }
+
+///////////////////////////////////////////////////////
 
 func translateAge(dateOfBirth string) (int, error) {
 	birthDate, err := time.Parse("2006-01-02", dateOfBirth)
