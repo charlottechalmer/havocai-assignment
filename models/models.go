@@ -6,8 +6,8 @@ type Config struct {
 }
 
 type Transformation struct {
-	Type   string            `json:"type"`
-	Params map[string]string `json:"params"`
+	Type   string                 `json:"type"`
+	Params map[string]interface{} `json:"params"`
 }
 
 /*
@@ -16,5 +16,7 @@ type Transformation struct {
    - need: list of elements to concat
  - calculate
    - need
+     - operator: +, -, \, *, %
+     - input:
 
 */

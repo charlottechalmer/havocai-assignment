@@ -9,7 +9,10 @@
       "name": {
           "type": "concat",
           "params": {
-              "fields": "FirstName,LastName",
+              "fields": [
+                  "FirstName",
+                  "LastName"
+              ],
               "separator": " "
           }
       }

@@ -126,12 +126,20 @@ func applyTransformations(input []map[string]interface{}, cfg *models.Config) ([
 }
 
 func concatTransformation(record map[string]interface{}, transformation models.Transformation) (string, error) {
-	fields := strings.Split(transformation.Params["fields"], ",")
-	fieldValues := []string{}
+	fieldsIface, ok := transformation.Params["fields"]
+	if !ok {
+		return "", fmt.Errorf("missing fields param")
+	}
 
+	fields, ok := fieldsIface.([]string)
+	if !ok {
+		return "", fmt.Errorf("fields should be an array of strings")
+	}
+
+	fieldValues := []string{}
 	for _, field := range fields {
 		// get value from input
-		value, ok := record[strings.TrimSpace(field)]
+		value, ok := record[field]
 		if !ok {
 			return "", fmt.Errorf("field %v not found in input", field)
 		}
@@ -143,7 +151,11 @@ func concatTransformation(record map[string]interface{}, transformation models.T
 
 		fieldValues = append(fieldValues, strVal)
 	}
-	separator := transformation.Params["separator"]
+
+	separator := ""
+	if separatorIface, ok := transformation.Params["separator"]; ok {
+		separator, _ = separatorIface.(string)
+	}
 	return strings.Join(fieldValues, separator), nil
 }
 

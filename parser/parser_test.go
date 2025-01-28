@@ -25,8 +25,11 @@ func TestConcatTransformation(t *testing.T) {
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]string{
-					"fields":    "FirstName,LastName",
+				Params: map[string]interface{}{
+					"fields": []string{
+						"FirstName",
+						"LastName",
+					},
 					"separator": " ",
 				},
 			},
@@ -41,8 +44,11 @@ func TestConcatTransformation(t *testing.T) {
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]string{
-					"fields":    "FirstName, LastName",
+				Params: map[string]interface{}{
+					"fields": []string{
+						"FirstName",
+						"LastName",
+					},
 					"separator": " ",
 				},
 			},
@@ -58,8 +64,12 @@ func TestConcatTransformation(t *testing.T) {
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]string{
-					"fields":    "Street,CityState,ZipCode",
+				Params: map[string]interface{}{
+					"fields": []string{
+						"Street",
+						"CityState",
+						"ZipCode",
+					},
 					"separator": "\n",
 				},
 			},
@@ -75,8 +85,11 @@ FooBar, WI
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]string{
-					"fields":    "FirstName,LastName",
+				Params: map[string]interface{}{
+					"fields": []string{
+						"FirstName",
+						"LastName",
+					},
 					"separator": " ",
 				},
 			},
@@ -91,8 +104,11 @@ FooBar, WI
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]string{
-					"fields":    "Field1,Field2",
+				Params: map[string]interface{}{
+					"fields": []string{
+						"Field1",
+						"Field2",
+					},
 					"separator": " ",
 				},
 			},
@@ -106,8 +122,8 @@ FooBar, WI
 			},
 			transformation: models.Transformation{
 				Type: "concat",
-				Params: map[string]string{
-					"fields":    "",
+				Params: map[string]interface{}{
+					"fields":    []string{""},
 					"separator": " ",
 				},
 			},
