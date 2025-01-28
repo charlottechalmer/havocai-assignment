@@ -101,11 +101,28 @@ func applyTransformations(input []map[string]interface{}, cfg *models.Config) ([
 
 	for _, record := range input {
 		transformed := make(map[string]interface{})
+		// apply mappings based on 1:1 mapping definition
 		for xmlField, jsonField := range cfg.Mappings {
 			if val, ok := record[xmlField]; ok {
 				transformed[jsonField] = val
 			}
 		}
+
+		for jsonField, transformation := range cfg.Transformations {
+			switch transformation.Type {
+			case "concat":
+				fields := strings.Split(transformation.Params["fields"], ",")
+				fieldValues := []string{}
+				for _, field := range fields {
+					// get value from input
+					fieldValues = append(fieldValues, record[field].(string))
+				}
+				// concat with separator
+				transformed[jsonField] = strings.Join(fieldValues, transformation.Params["separator"])
+			}
+
+		}
+
 		output = append(output, transformed)
 	}
 	return output, nil

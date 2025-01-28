@@ -9,16 +9,8 @@
       "name": {
           "type": "concat",
           "params": {
-              "fields": [
-                  "FirstName",
-                  "LastName"
-              ]
-          }
-      },
-      "age": {
-          "type": "calculation",
-          "params": {
-              "fields": "DateOfBirth"
+              "fields": "FirstName,LastName",
+              "separator": " "
           }
       }
   }
