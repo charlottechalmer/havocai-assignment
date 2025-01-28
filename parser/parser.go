@@ -6,16 +6,17 @@ import (
 	"encoding/xml"
 	"fmt"
 	"havocai-assignment/models"
+	"strconv"
 	"strings"
 	"time"
 )
 
-func ParseXML(input []byte) ([]map[string]string, error) {
+func ParseXML(input []byte) ([]map[string]interface{}, error) {
 	decoder := xml.NewDecoder(bytes.NewReader(input))
-	var results []map[string]string
+	var results []map[string]interface{}
 
 	// to track current data within loop
-	currentData := make(map[string]string)
+	currentData := make(map[string]interface{})
 	currentElementName := ""
 	//track nesting to determine when to exit a grouping
 	level := 0
@@ -38,7 +39,7 @@ func ParseXML(input []byte) ([]map[string]string, error) {
 
 			// need to handle scenario where a start element has attributes
 			for _, attr := range t.Attr {
-				currentData[attr.Name.Local] = attr.Value
+				currentData[attr.Name.Local] = parseValue(attr.Value)
 			}
 		case xml.EndElement:
 			// when we encounter an end element, want to decrease level (exiting an element) and then append data to results and reset currentData and currentElementName
@@ -47,7 +48,7 @@ func ParseXML(input []byte) ([]map[string]string, error) {
 			// if level == 1, we are at the end of a grouping
 			if level == 1 {
 				results = append(results, currentData)
-				currentData = make(map[string]string)
+				currentData = make(map[string]interface{})
 			}
 
 			currentElementName = ""
@@ -55,14 +56,33 @@ func ParseXML(input []byte) ([]map[string]string, error) {
 			// when we encounter CharData, store the character data at the current element
 			content := strings.TrimSpace(string(t))
 			if currentElementName != "" && content != "" {
-				currentData[currentElementName] = content
+				currentData[currentElementName] = parseValue(content)
 			}
 		}
 	}
 	return results, nil
 }
 
-func ConvertToJSON(input []map[string]string, cfg *models.Config) ([]byte, error) {
+func parseValue(val string) interface{} {
+	// try to parse as int
+	if intVal, err := strconv.Atoi(val); err == nil {
+		return intVal
+	}
+
+	// try to parse as float
+	if floatVal, err := strconv.ParseFloat(val, 64); err == nil {
+		return floatVal
+	}
+
+	//try to parse as bool
+	if boolVal, err := strconv.ParseBool(val); err == nil {
+		return boolVal
+	}
+
+	return val
+}
+
+func ConvertToJSON(input []map[string]interface{}, cfg *models.Config) ([]byte, error) {
 	transformedInput, err := applyTransformations(input, cfg)
 	if err != nil {
 		return nil, err
@@ -76,7 +96,7 @@ func ConvertToJSON(input []map[string]string, cfg *models.Config) ([]byte, error
 	return jsonOutput, nil
 }
 
-func applyTransformations(input []map[string]string, cfg *models.Config) ([]map[string]interface{}, error) {
+func applyTransformations(input []map[string]interface{}, cfg *models.Config) ([]map[string]interface{}, error) {
 	var output []map[string]interface{}
 
 	for _, record := range input {

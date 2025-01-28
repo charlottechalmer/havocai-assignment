@@ -98,15 +98,15 @@ func TestParseXML(t *testing.T) {
 	tests := []struct {
 		name          string
 		inputFilePath string
-		expected      []map[string]string
+		expected      []map[string]interface{}
 		expectedErr   bool
 	}{
 		{
 			name:          "valid single patient",
 			inputFilePath: "../test/testdata/single_patient.xml",
-			expected: []map[string]string{
+			expected: []map[string]interface{}{
 				{
-					"ID":          "12345",
+					"ID":          12345,
 					"DateOfBirth": "1993-07-06",
 					"FirstName":   "Charlotte",
 					"LastName":    "Taylor",
@@ -117,15 +117,15 @@ func TestParseXML(t *testing.T) {
 		{
 			name:          "valid multiple patient",
 			inputFilePath: "../test/testdata/multiple_patients.xml",
-			expected: []map[string]string{
+			expected: []map[string]interface{}{
 				{
-					"ID":          "12345",
+					"ID":          12345,
 					"DateOfBirth": "1993-07-06",
 					"FirstName":   "Charlotte",
 					"LastName":    "Taylor",
 				},
 				{
-					"ID":          "53425",
+					"ID":          53425,
 					"DateOfBirth": "1920-11-25",
 					"FirstName":   "Jane",
 					"LastName":    "Doe",
@@ -160,6 +160,7 @@ func TestParseXML(t *testing.T) {
 }
 
 func TestConvertToJSON(t *testing.T) {
+	// TODO: add config
 	tests := []struct {
 		name                       string
 		inputXMLFilePath           string
