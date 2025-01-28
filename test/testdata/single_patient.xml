@@ -1,0 +1,7 @@
+<Patients>
+  <Patient ID="12345">
+    <FirstName>Charlotte</FirstName>
+    <LastName>Taylor</LastName>
+    <DateOfBirth>1993-07-06</DateOfBirth>
+  </Patient>
+</Patients>
