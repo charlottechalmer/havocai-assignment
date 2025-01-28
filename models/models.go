@@ -2,6 +2,16 @@ package models
 
 import "encoding/xml"
 
+type Config struct {
+	Mappings        []map[string]string       `json:"mappings"`
+	Transformations map[string]Transformation `json:"transformations"`
+}
+
+type Transformation struct {
+	Type   string   `json:"type"`
+	Fields []string `json:"fields"`
+}
+
 type XMLPatients struct {
 	XMLName  xml.Name     `xml:"Patients"`
 	Patients []XMLPatient `xml:"Patient"`
