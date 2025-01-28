@@ -9,6 +9,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+/*
+ TESTS TO ADD:
+ - TestCalculateTransformation
+ - TestConvertToJSON
+ - Test different config inputs
+   - changes to input data
+   - changes to output requirements
+   - different transformations
+     - deceased: bool (if DateOfDeath exists)
+*/
+
 func TestConcatTransformation(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -19,27 +30,6 @@ func TestConcatTransformation(t *testing.T) {
 	}{
 		{
 			name: "valid concat of 2 strings with space separator",
-			record: map[string]interface{}{
-				"FirstName": "Charlotte",
-				"LastName":  "Taylor",
-			},
-			transformation: models.Transformation{
-				Type: "concat",
-				Params: models.Params{
-					Fields: []string{
-						"FirstName",
-						"LastName",
-					},
-					Extras: map[string]interface{}{
-						"separator": " ",
-					},
-				},
-			},
-			expected:    "Charlotte Taylor",
-			expectedErr: false,
-		},
-		{
-			name: "valid concat of 2 strings with space separator, space between fields",
 			record: map[string]interface{}{
 				"FirstName": "Charlotte",
 				"LastName":  "Taylor",

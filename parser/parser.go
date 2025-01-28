@@ -116,6 +116,12 @@ func applyTransformations(input []map[string]interface{}, cfg *models.Config) ([
 					return nil, err
 				}
 				transformed[jsonField] = val
+			case "calculate":
+				val, err := calculateTransformation(record, transformation)
+				if err != nil {
+					return nil, err
+				}
+				transformed[jsonField] = val
 			}
 
 		}
@@ -151,9 +157,22 @@ func concatTransformation(record map[string]interface{}, transformation models.T
 	return strings.Join(fieldValues, separator), nil
 }
 
-// func calculateTransformation(record map[string]interface, transformation models.Transformation) (interface{}, error) {
+func calculateTransformation(record map[string]interface{}, transformation models.Transformation) (interface{}, error) {
+	// get operation from extras
+	// ensure operation is a string
 
-// }
+	//parse input fields
+	// first check if field is in record
+	// if it is, convert value to float64 and add to list of values
+	// if it is not, check if it is included in "extras"
+	// if it is, convert to float and add to list of values
+
+	// switch on operation
+	// perform calculations based on operation
+	// special case for time difference
+	// return record
+
+}
 
 ///////////////////////////////////////////////////////
 
