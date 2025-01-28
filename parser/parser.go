@@ -34,6 +34,11 @@ func ParseXML(input []byte) ([]map[string]string, error) {
 			// when we encounter a start element, want to increment level (noting we are within an element) and track the current element name
 			level++
 			currentElementName = t.Name.Local
+
+			// need to handle scenario where a start element has attributes
+			for _, attr := range t.Attr {
+				currentData[attr.Name.Local] = attr.Value
+			}
 		case xml.EndElement:
 			// when we encounter an end element, want to decrease level (exiting an element) and then append data to results and reset currentData and currentElementName
 			level--

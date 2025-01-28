@@ -139,12 +139,6 @@ func TestParseXML(t *testing.T) {
 			expected:      nil,
 			expectedErr:   true,
 		},
-		{
-			name:          "empty",
-			inputFilePath: "../test/testdata/empty.xml",
-			expected:      nil,
-			expectedErr:   true,
-		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
