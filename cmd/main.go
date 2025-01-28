@@ -26,7 +26,7 @@ func main() {
 
 	fmt.Printf("xml patients: %+v\n", xmlPatients)
 
-	jsonPatients, err := parser.ConvertToJSON(xmlPatients)
+	jsonPatients, err := parser.ConvertToJSON(xmlPatients, config)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error converting to JSON: %+v\n", err)
 	}

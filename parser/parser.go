@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"havocai-assignment/models"
 	"strings"
 	"time"
 )
@@ -61,6 +62,37 @@ func ParseXML(input []byte) ([]map[string]string, error) {
 	return results, nil
 }
 
+func ConvertToJSON(input []map[string]string, cfg *models.Config) ([]byte, error) {
+	transformedInput, err := applyTransformations(input, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	jsonOutput, err := json.MarshalIndent(transformedInput, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+
+	return jsonOutput, nil
+}
+
+func applyTransformations(input []map[string]string, cfg *models.Config) ([]map[string]interface{}, error) {
+	var output []map[string]interface{}
+
+	for _, record := range input {
+		transformed := make(map[string]interface{})
+		for xmlField, jsonField := range cfg.Mappings {
+			if val, ok := record[xmlField]; ok {
+				transformed[jsonField] = val
+			}
+		}
+		output = append(output, transformed)
+	}
+	return output, nil
+}
+
+///////////////////////////////////////////////////////
+
 func translateName(firstName string, lastName string) string {
 	sanitizedFirstName := strings.TrimSpace(firstName)
 	sanitizedLastName := strings.TrimSpace(lastName)
@@ -81,36 +113,3 @@ func translateAge(dateOfBirth string) (int, error) {
 
 	return age, nil
 }
-
-func ConvertToJSON(input []map[string]string) ([]byte, error) {
-	jsonOutput, err := json.MarshalIndent(input, "", "  ")
-	if err != nil {
-		return nil, err
-	}
-
-	return jsonOutput, nil
-}
-
-// func ConvertToJSON(input *models.XMLPatients) ([]byte, error) {
-// 	jsonPatients := &models.JSONPatients{}
-// 	for _, patient := range input.Patients {
-// 		name := translateName(patient.FirstName, patient.LastName)
-// 		age, err := translateAge(patient.DateOfBirth)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		jsonPatients.Patients = append(jsonPatients.Patients, models.JSONPatient{
-// 			ID:   patient.ID,
-// 			Name: name,
-// 			Age:  age,
-// 		})
-// 	}
-
-// 	jsonOutput, err := json.MarshalIndent(jsonPatients, "", "  ")
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return jsonOutput, nil
-// }

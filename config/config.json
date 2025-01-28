@@ -1,22 +1,25 @@
 {
-    "root_element": "Patients",
-    "item_element": "Patient",
   "mappings": {
-      "ID": "id"
+      "ID": "id",
+      "FirstName": "first_name",
+      "LastName": "last_name",
+      "DateOfBirth": "dob"
   },
   "transformations": {
       "name": {
           "type": "concat",
-          "fields": [
-              "FirstName",
-              "LastName"
-          ]
+          "params": {
+              "fields": [
+                  "FirstName",
+                  "LastName"
+              ]
+          }
       },
       "age": {
           "type": "calculation",
-          "fields": [
-              "DateOfBirth"
-          ]
+          "params": {
+              "fields": "DateOfBirth"
+          }
       }
   }
 }
