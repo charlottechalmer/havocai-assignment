@@ -1,4 +1,6 @@
 {
+    "root_element": "Patients",
+    "item_element": "Patient",
   "mappings": {
       "ID": "id"
   },
