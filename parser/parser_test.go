@@ -1,8 +1,6 @@
 package parser
 
 import (
-	"encoding/xml"
-	"havocai-assignment/models"
 	"os"
 	"testing"
 	"time"
@@ -100,21 +98,18 @@ func TestParseXML(t *testing.T) {
 	tests := []struct {
 		name          string
 		inputFilePath string
-		expected      *models.XMLPatients
+		expected      []map[string]string
 		expectedErr   bool
 	}{
 		{
 			name:          "valid single patient",
 			inputFilePath: "../test/testdata/single_patient.xml",
-			expected: &models.XMLPatients{
-				XMLName: xml.Name{Local: "Patients"},
-				Patients: []models.XMLPatient{
-					{
-						ID:          12345,
-						FirstName:   "Charlotte",
-						LastName:    "Taylor",
-						DateOfBirth: "1993-07-06",
-					},
+			expected: []map[string]string{
+				{
+					"ID":          "12345",
+					"DateOfBirth": "1993-07-06",
+					"FirstName":   "Charlotte",
+					"LastName":    "Taylor",
 				},
 			},
 			expectedErr: false,
@@ -122,21 +117,18 @@ func TestParseXML(t *testing.T) {
 		{
 			name:          "valid multiple patient",
 			inputFilePath: "../test/testdata/multiple_patients.xml",
-			expected: &models.XMLPatients{
-				XMLName: xml.Name{Local: "Patients"},
-				Patients: []models.XMLPatient{
-					{
-						ID:          12345,
-						FirstName:   "Charlotte",
-						LastName:    "Taylor",
-						DateOfBirth: "1993-07-06",
-					},
-					{
-						ID:          53425,
-						FirstName:   "Jane",
-						LastName:    "Doe",
-						DateOfBirth: "1920-11-25",
-					},
+			expected: []map[string]string{
+				{
+					"ID":          "12345",
+					"DateOfBirth": "1993-07-06",
+					"FirstName":   "Charlotte",
+					"LastName":    "Taylor",
+				},
+				{
+					"ID":          "53425",
+					"DateOfBirth": "1920-11-25",
+					"FirstName":   "Jane",
+					"LastName":    "Doe",
 				},
 			},
 			expectedErr: false,
