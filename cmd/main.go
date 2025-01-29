@@ -32,5 +32,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error converting to JSON: %+v\n", err)
 	}
 
-	fmt.Printf("patients: %+v\n", string(jsonPatients))
+	// TODO: write to file
+	fmt.Printf("%+v\n", string(jsonPatients))
 }

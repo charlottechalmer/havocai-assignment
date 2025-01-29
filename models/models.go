@@ -1,6 +1,7 @@
 package models
 
 type Config struct {
+	RootName        string                    `json:"root"`
 	Mappings        map[string]string         `json:"mappings"`
 	Transformations map[string]Transformation `json:"transformations"`
 }

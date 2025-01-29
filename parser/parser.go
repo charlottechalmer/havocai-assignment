@@ -88,7 +88,11 @@ func ConvertToJSON(input []map[string]interface{}, cfg *models.Config) ([]byte, 
 		return nil, err
 	}
 
-	jsonOutput, err := json.MarshalIndent(transformedInput, "", "  ")
+	wrappedOutput := map[string]interface{}{
+		cfg.RootName: transformedInput,
+	}
+
+	jsonOutput, err := json.MarshalIndent(wrappedOutput, "", "  ")
 	if err != nil {
 		return nil, err
 	}
@@ -131,25 +135,17 @@ func applyTransformations(input []map[string]interface{}, cfg *models.Config) ([
 	return output, nil
 }
 
-// what happpens when concating string and int
-// e.g. month = "july" and day = 6
-// would need to cast to a string
-// need to think about if this compromises the integrity of the data
 func concatTransformation(record map[string]interface{}, transformation models.Transformation) (string, error) {
 	fields := transformation.Params.Fields
 
 	fieldValues := []string{}
 	for _, field := range fields {
-		// get value from input
 		value, ok := record[field]
 		if !ok {
 			return "", fmt.Errorf("field %v not found in input", field)
 		}
 
-		strVal, ok := value.(string)
-		if !ok {
-			return "", fmt.Errorf("field %v is not a string, cannot concat", field)
-		}
+		strVal := fmt.Sprintf("%v", value)
 
 		fieldValues = append(fieldValues, strVal)
 	}

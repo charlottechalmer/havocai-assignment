@@ -49,6 +49,29 @@ func TestConcatTransformation(t *testing.T) {
 			expectedErr: false,
 		},
 		{
+			name: "valid concat of multiple fields of different types",
+			record: map[string]interface{}{
+				"BirthMonth": "July",
+				"BirthDay":   6,
+				"BirthYear":  1993,
+			},
+			transformation: models.Transformation{
+				Type: "concat",
+				Params: models.Params{
+					Fields: []string{
+						"BirthMonth",
+						"BirthDay",
+						"BirthYear",
+					},
+					Extras: map[string]interface{}{
+						"separator": " ",
+					},
+				},
+			},
+			expected:    "July 6 1993",
+			expectedErr: false,
+		},
+		{
 			name: "valid concat of multiple strings with newline",
 			record: map[string]interface{}{
 				"Street":    "1234 Foo Ave",
@@ -84,27 +107,6 @@ FooBar, WI
 					Fields: []string{
 						"FirstName",
 						"LastName",
-					},
-					Extras: map[string]interface{}{
-						"separator": " ",
-					},
-				},
-			},
-			expected:    "",
-			expectedErr: true,
-		},
-		{
-			name: "field is not a string",
-			record: map[string]interface{}{
-				"Field1": "foobar",
-				"Field2": 123,
-			},
-			transformation: models.Transformation{
-				Type: "concat",
-				Params: models.Params{
-					Fields: []string{
-						"Field1",
-						"Field2",
 					},
 					Extras: map[string]interface{}{
 						"separator": " ",
