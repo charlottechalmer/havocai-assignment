@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"encoding/json"
 	"havocai-assignment/models"
 	"os"
 	"testing"
@@ -10,7 +11,6 @@ import (
 
 /*
  TESTS TO ADD:
- - TestConvertToJSON
  - Test different config inputs
    - changes to input data
    - changes to output requirements
@@ -458,34 +458,152 @@ func TestParseXML(t *testing.T) {
 
 }
 
+func TestConvertToJSON(t *testing.T) {
+	tests := []struct {
+		name        string
+		input       []map[string]interface{}
+		config      *models.Config
+		expected    string
+		expectedErr bool
+	}{
+		{
+			name: "Basic mapping",
+			input: []map[string]interface{}{
+				{"old_field": "value1"},
+			},
+			config: &models.Config{
+				RootName: "data",
+				Mappings: map[string]string{
+					"old_field": "new_field",
+				},
+			},
+			expected: `{
+				"data": [{
+					"new_field": "value1"
+				}]
+			}`,
+			expectedErr: false,
+		},
+		{
+			name: "Concat transformation",
+			input: []map[string]interface{}{
+				{"first": "John", "last": "Doe"},
+			},
+			config: &models.Config{
+				RootName: "users",
+				Transformations: map[string]models.Transformation{
+					"full_name": {
+						Type: "concat",
+						Params: models.Params{
+							Fields: []string{"first", "last"},
+							Extras: map[string]interface{}{"separator": " "},
+						},
+					},
+				},
+			},
+			expected: `{
+				"users": [{
+					"full_name": "John Doe"
+				}]
+			}`,
+			expectedErr: false,
+		},
+		{
+			name: "Transformation with missing field",
+			input: []map[string]interface{}{
+				{"first": "John"},
+			},
+			config: &models.Config{
+				RootName: "users",
+				Transformations: map[string]models.Transformation{
+					"full_name": {
+						Type: "concat",
+						Params: models.Params{
+							Fields: []string{"first", "last"},
+							Extras: map[string]interface{}{"separator": " "},
+						},
+					},
+				},
+			},
+			expectedErr: true,
+		},
+		{
+			name: "Calculation transformation",
+			input: []map[string]interface{}{
+				{"a": 5, "b": 3},
+			},
+			config: &models.Config{
+				RootName: "calculations",
+				Transformations: map[string]models.Transformation{
+					"sum": {
+						Type: "calculate",
+						Params: models.Params{
+							Fields: []string{"a", "b"},
+							Extras: map[string]interface{}{"operation": "add"},
+						},
+					},
+				},
+			},
+			expected: `{
+				"calculations": [{
+					"sum": 8
+				}]
+			}`,
+			expectedErr: false,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			actual, err := ConvertToJSON(test.input, test.config)
+
+			if test.expectedErr {
+				require.Error(t, err)
+				require.Nil(t, actual)
+			} else {
+				require.NoError(t, err)
+				var unmarshalledActual map[string]interface{}
+				var unmarshalledExpected map[string]interface{}
+				require.NoError(t, json.Unmarshal(actual, &unmarshalledActual))
+				require.NoError(t, json.Unmarshal([]byte(test.expected), &unmarshalledExpected))
+				require.Equal(t, unmarshalledExpected, unmarshalledActual)
+			}
+		})
+	}
+}
+
+// // TODO: perhaps create a new testing suite that does more thorough testing
 // func TestConvertToJSON(t *testing.T) {
-// 	// TODO: add config
 // 	tests := []struct {
 // 		name                       string
+// 		configFilePath             string
 // 		inputXMLFilePath           string
 // 		expectedJSONOutputFilePath string
 // 		expectedErr                bool
 // 	}{
 // 		{
 // 			name:                       "provided input and output",
+// 			configFilePath:             "../config/config.json",
 // 			inputXMLFilePath:           "../test/testdata/input.xml",
 // 			expectedJSONOutputFilePath: "../test/testdata/output.json",
 // 			expectedErr:                false,
 // 		},
 // 		{
 // 			name:                       "valid single patient",
+// 			configFilePath:             "../config/config.json",
 // 			inputXMLFilePath:           "../test/testdata/single_patient.xml",
 // 			expectedJSONOutputFilePath: "../test/testdata/single_patient.json",
 // 			expectedErr:                false,
 // 		},
 // 		{
 // 			name:                       "valid multiple patients",
+// 			configFilePath:             "../config/config.json",
 // 			inputXMLFilePath:           "../test/testdata/multiple_patients.xml",
 // 			expectedJSONOutputFilePath: "../test/testdata/multiple_patients.json",
 // 			expectedErr:                false,
 // 		},
 // 		{
 // 			name:                       "invalid date",
+// 			configFilePath:             "../config/config.json",
 // 			inputXMLFilePath:           "../test/testdata/invalid_date.xml",
 // 			expectedJSONOutputFilePath: "../test/testdata/error.json",
 // 			expectedErr:                true,
@@ -493,13 +611,16 @@ func TestParseXML(t *testing.T) {
 // 	}
 // 	for _, test := range tests {
 // 		t.Run(test.name, func(t *testing.T) {
+// 			config, err := config.LoadFile(test.configFilePath)
+// 			require.NoError(t, err)
+
 // 			xmlData, err := os.ReadFile(test.inputXMLFilePath)
 // 			require.NoError(t, err)
 
 // 			xmlPatients, err := ParseXML(xmlData)
 // 			require.NoError(t, err)
 
-// 			actual, err := ConvertToJSON(xmlPatients)
+// 			actual, err := ConvertToJSON(xmlPatients, config)
 // 			if test.expectedErr {
 // 				require.Error(t, err)
 // 				require.Nil(t, actual)
