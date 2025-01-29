@@ -14,6 +14,7 @@ func main() {
 	}
 	fmt.Printf("config: %+v\n", config)
 
+	// TODO: change to be passed in via cmdln
 	input, err := os.ReadFile("test/testdata/input.xml")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error reading input file: %+v\n", err)

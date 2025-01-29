@@ -131,6 +131,10 @@ func applyTransformations(input []map[string]interface{}, cfg *models.Config) ([
 	return output, nil
 }
 
+// what happpens when concating string and int
+// e.g. month = "july" and day = 6
+// would need to cast to a string
+// need to think about if this compromises the integrity of the data
 func concatTransformation(record map[string]interface{}, transformation models.Transformation) (string, error) {
 	fields := transformation.Params.Fields
 
@@ -159,34 +163,137 @@ func concatTransformation(record map[string]interface{}, transformation models.T
 
 func calculateTransformation(record map[string]interface{}, transformation models.Transformation) (interface{}, error) {
 	// get operation from extras
+	extras := transformation.Params.Extras
 	// ensure operation is a string
+	operation, ok := extras["operation"].(string)
+	if !ok {
+		return nil, fmt.Errorf("invalid operation")
+	}
 
 	//parse input fields
-	// first check if field is in record
-	// if it is, convert value to float64 and add to list of values
-	// if it is not, check if it is included in "extras"
-	// if it is, convert to float and add to list of values
+	fields := transformation.Params.Fields
 
+	format := "2006-01-02"
+	if formatIface, ok := extras["format"]; ok {
+		format, _ = formatIface.(string)
+	}
+
+	if operation == "time_difference" {
+		if len(fields) != 2 {
+			return nil, fmt.Errorf("time_difference requires two values")
+		}
+		startField := fields[0]
+		startDateVal, found := getFieldValue(startField, record, extras)
+		if !found {
+			return nil, fmt.Errorf("field %v not found in xml or in extras", startField)
+		}
+
+		startDateStr, ok := startDateVal.(string)
+		if !ok {
+			return nil, fmt.Errorf("field %v is not a string", startField)
+		}
+
+		startDate, err := time.Parse(format, startDateStr)
+		if err != nil {
+			return nil, fmt.Errorf("unable to parse start date (%v), err %v", startDateStr, err)
+		}
+
+		endField := fields[1]
+		var endDate time.Time
+
+		if endField == "CurrentTime" {
+			endDate = time.Now()
+		} else {
+			endDateVal, found := getFieldValue(endField, record, extras)
+			if !found {
+				return nil, fmt.Errorf("field %v not found in xml or in extras", startField)
+			}
+
+			endDateStr, ok := endDateVal.(string)
+			if !ok {
+				return nil, fmt.Errorf("field %v is not a string", endField)
+			}
+
+			endDate, err = time.Parse(format, endDateStr)
+			if err != nil {
+				return nil, fmt.Errorf("unable to parse end date (%v), err %v", endDateStr, err)
+			}
+		}
+		duration := endDate.Sub(startDate)
+
+		unit := "seconds"
+		if unitIface, ok := extras["unit"]; ok {
+			unit, _ = unitIface.(string)
+		}
+
+		switch unit {
+		case "years":
+			years := float64(duration.Hours()) / (365.25 * 24)
+			return years, nil
+		case "months":
+			months := float64(duration.Hours()) / (30.44 * 24)
+			return months, nil
+		case "weeks":
+			weeks := float64(duration.Hours()) / (7 * 24)
+			return weeks, nil
+		case "days":
+			days := duration.Hours() / 24
+			return days, nil
+		case "hours":
+			return duration.Hours(), nil
+		case "minutes":
+			return duration.Minutes(), nil
+		case "seconds":
+			return duration.Seconds(), nil
+		default:
+			return nil, fmt.Errorf("unsupported time unit: %v", unit)
+		}
+
+	}
+
+	values := []float64{}
+	for _, field := range fields {
+		val, found := getFieldValue(field, record, extras)
+		if !found {
+			return nil, fmt.Errorf("field %v not found in XML or extras", field)
+		}
+
+		floatVal, err := toFloat64(val, format)
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, floatVal)
+	}
 	// switch on operation
-	// perform calculations based on operation
-	// special case for time difference
-	// return record
-
-}
-
-///////////////////////////////////////////////////////
-
-func translateAge(dateOfBirth string) (int, error) {
-	birthDate, err := time.Parse("2006-01-02", dateOfBirth)
-	if err != nil {
-		return 0, err
+	switch operation {
+	case "add":
+		sum := 0.0
+		for _, val := range values {
+			sum += val
+		}
+		return sum, nil
+	case "subtract":
+		result := values[0]
+		for i := 1; i < len(values); i++ {
+			result -= values[i]
+		}
+		return result, nil
+	case "multiply":
+		product := 1.0
+		for _, val := range values {
+			product *= val
+		}
+		return product, nil
+	case "divide":
+		result := values[0]
+		for i := 1; i < len(values); i++ {
+			if values[i] == 0 {
+				return nil, fmt.Errorf("attempting to divide by 0")
+			}
+			result /= values[i]
+		}
+		return result, nil
+	default:
+		return nil, fmt.Errorf("unsupported operation: %v", operation)
 	}
-
-	curr := time.Now()
-	age := curr.Year() - birthDate.Year()
-	if curr.YearDay() < birthDate.YearDay() {
-		age--
-	}
-
-	return age, nil
 }

@@ -15,11 +15,6 @@ type Params struct {
 	Extras map[string]interface{} `json:"extras"`
 }
 
-// type Transformation struct {
-// 	Type   string                 `json:"type"`
-// 	Params map[string]interface{} `json:"params"`
-// }
-
 /*
  examples of transformations & info needed
  - concat
