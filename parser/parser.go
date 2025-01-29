@@ -221,7 +221,7 @@ func calculateTransformation(record map[string]interface{}, transformation model
 		}
 		duration := endDate.Sub(startDate)
 
-		unit := "seconds"
+		unit := "seconds" //default unit
 		if unitIface, ok := extras["unit"]; ok {
 			unit, _ = unitIface.(string)
 		}
@@ -245,6 +245,12 @@ func calculateTransformation(record map[string]interface{}, transformation model
 			return duration.Minutes(), nil
 		case "seconds":
 			return duration.Seconds(), nil
+		case "milliseconds":
+			return duration.Milliseconds(), nil
+		case "microseconds":
+			return duration.Microseconds(), nil
+		case "nanoseconds":
+			return duration.Nanoseconds(), nil
 		default:
 			return nil, fmt.Errorf("unsupported time unit: %v", unit)
 		}

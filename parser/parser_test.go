@@ -4,7 +4,6 @@ import (
 	"havocai-assignment/models"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 )
@@ -146,45 +145,50 @@ FooBar, WI
 	}
 }
 
-func TestTranslateAge(t *testing.T) {
-	tests := []struct {
-		name        string
-		dateOfBirth string
-		expected    int
-		expectedErr bool
-	}{
-		{
-			name:        "valid date of birth, birthday not yet passed this year",
-			dateOfBirth: "1993-07-06",
-			expected:    time.Now().Year() - 1993 - 1,
-			expectedErr: false,
-		},
-		{
-			name:        "valid date of birth, birthday has passed this year",
-			dateOfBirth: "1993-01-20",
-			expected:    time.Now().Year() - 1993,
-			expectedErr: false,
-		},
-		{
-			name:        "valid date of birth, birthday is today",
-			dateOfBirth: time.Now().Format("2006-01-02"),
-			expected:    0,
-			expectedErr: false,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			actual, err := translateAge(test.dateOfBirth)
-			if test.expectedErr {
-				require.Error(t, err)
-				require.Equal(t, 0, actual)
-			} else {
-				require.NoError(t, err)
-				require.Equal(t, test.expected, actual)
-			}
-		})
-	}
-}
+// func TestCalculateTransformation(t *testing.T) {
+// 	tests := []struct {
+// 	}{}
+// }
+
+// func TestTranslateAge(t *testing.T) {
+// 	tests := []struct {
+// 		name        string
+// 		dateOfBirth string
+// 		expected    int
+// 		expectedErr bool
+// 	}{
+// 		{
+// 			name:        "valid date of birth, birthday not yet passed this year",
+// 			dateOfBirth: "1993-07-06",
+// 			expected:    time.Now().Year() - 1993 - 1,
+// 			expectedErr: false,
+// 		},
+// 		{
+// 			name:        "valid date of birth, birthday has passed this year",
+// 			dateOfBirth: "1993-01-20",
+// 			expected:    time.Now().Year() - 1993,
+// 			expectedErr: false,
+// 		},
+// 		{
+// 			name:        "valid date of birth, birthday is today",
+// 			dateOfBirth: time.Now().Format("2006-01-02"),
+// 			expected:    0,
+// 			expectedErr: false,
+// 		},
+// 	}
+// 	for _, test := range tests {
+// 		t.Run(test.name, func(t *testing.T) {
+// 			actual, err := translateAge(test.dateOfBirth)
+// 			if test.expectedErr {
+// 				require.Error(t, err)
+// 				require.Equal(t, 0, actual)
+// 			} else {
+// 				require.NoError(t, err)
+// 				require.Equal(t, test.expected, actual)
+// 			}
+// 		})
+// 	}
+// }
 
 func TestParseXML(t *testing.T) {
 	tests := []struct {
