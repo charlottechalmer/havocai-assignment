@@ -17,12 +17,21 @@ import (
  TESTS TO ADD:
  - Test different config inputs
    - changes to input data
+       - fields are added
+           - new 1:1 mappings
+           - new transformations
+               - bool condition; if DateOfDeath exists --> deceased:true
+               - calculation; "last visit" --> x months ago
+               - counting: nested elements --> "number_of_allergies"
+       - fields are renamed
+       - nested structures are added (address)
+       - format of data might change (DOB -- DD-MM-YYY)
+       - root element changes
    - changes to output requirements
-   - different transformations
-     - deceased: bool (if DateOfDeath exists)
- - calculations
-    - counting
-    - "last visit" -- return (x months || x days ago)
+       - field names change
+       - output becomes more nested(e.g contact info, medical info)
+       - changing format -- name --> Last, First
+       - field types change -- age --> string
 */
 
 func TestEndToEnd(t *testing.T) {
@@ -49,6 +58,12 @@ func TestEndToEnd(t *testing.T) {
 			configPath:       "../testdata/basicpatient/config.json",
 			inputXMLPath:     "../testdata/basicpatient/multiple_patients.xml",
 			expectedJSONPath: "../testdata/basicpatient/multiple_patients.json",
+		},
+		{
+			name:             "new fields are added - mappings",
+			configPath:       "../testdata/inputchanges/new_fields_config.json",
+			inputXMLPath:     "../testdata/inputchanges/new_fields.xml",
+			expectedJSONPath: "../testdata/inputchanges/new_fields.json",
 		},
 	}
 

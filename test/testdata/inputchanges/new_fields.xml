@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patients>
+    <Patient ID="12345">
+        <FirstName>John</FirstName>
+        <LastName>Doe</LastName>
+        <Gender>Male</Gender>
+        <PhoneNumber>123-456-7890</PhoneNumber>
+        <DateOfBirth>1985-07-15</DateOfBirth>
+    </Patient>
+    <Patient ID="67890">
+        <FirstName>Jane</FirstName>
+        <LastName>Smith</LastName>
+        <Gender>Female</Gender>
+        <PhoneNumber>555-555-5555</PhoneNumber>
+        <DateOfBirth>1992-03-22</DateOfBirth>
+    </Patient>
+</Patients>
