@@ -17,6 +17,9 @@ import (
    - changes to output requirements
    - different transformations
      - deceased: bool (if DateOfDeath exists)
+ - calculations
+    - counting
+    - "last visit" -- return (x months || x days ago)
 */
 
 func TestConcatTransformation(t *testing.T) {
