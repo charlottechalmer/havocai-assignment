@@ -10,7 +10,6 @@ import (
 
 /*
  TESTS TO ADD:
- - TestCalculateTransformation
  - TestConvertToJSON
  - Test different config inputs
    - changes to input data

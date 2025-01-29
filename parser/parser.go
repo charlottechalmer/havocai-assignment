@@ -65,17 +65,14 @@ func ParseXML(input []byte) ([]map[string]interface{}, error) {
 }
 
 func parseValue(val string) interface{} {
-	// try to parse as int
 	if intVal, err := strconv.Atoi(val); err == nil {
 		return intVal
 	}
 
-	// try to parse as float
 	if floatVal, err := strconv.ParseFloat(val, 64); err == nil {
 		return floatVal
 	}
 
-	//try to parse as bool
 	if boolVal, err := strconv.ParseBool(val); err == nil {
 		return boolVal
 	}
@@ -189,7 +186,7 @@ func calculateTransformation(record map[string]interface{}, transformation model
 		}
 		values = append(values, floatVal)
 	}
-	// switch on operation
+
 	switch operation {
 	case "add":
 		return addValues(values), nil
