@@ -34,21 +34,21 @@ func TestEndToEnd(t *testing.T) {
 	}{
 		{
 			name:             "provided input and output",
-			configPath:       "../testdata/config.json",
-			inputXMLPath:     "../testdata/input.xml",
-			expectedJSONPath: "../testdata/output.json",
+			configPath:       "../testdata/basicpatient/config.json",
+			inputXMLPath:     "../testdata/provided/input.xml",
+			expectedJSONPath: "../testdata/provided/output.json",
 		},
 		{
 			name:             "valid single patient",
-			configPath:       "../testdata/config.json",
-			inputXMLPath:     "../testdata/single_patient.xml",
-			expectedJSONPath: "../testdata/single_patient.json",
+			configPath:       "../testdata/basicpatient/config.json",
+			inputXMLPath:     "../testdata/basicpatient/single_patient.xml",
+			expectedJSONPath: "../testdata/basicpatient/single_patient.json",
 		},
 		{
 			name:             "valid multiple patients",
-			configPath:       "../testdata/config.json",
-			inputXMLPath:     "../testdata/multiple_patients.xml",
-			expectedJSONPath: "../testdata/multiple_patients.json",
+			configPath:       "../testdata/basicpatient/config.json",
+			inputXMLPath:     "../testdata/basicpatient/multiple_patients.xml",
+			expectedJSONPath: "../testdata/basicpatient/multiple_patients.json",
 		},
 	}
 

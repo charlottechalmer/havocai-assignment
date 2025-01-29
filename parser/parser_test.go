@@ -390,7 +390,7 @@ func TestParseXML(t *testing.T) {
 	}{
 		{
 			name:          "valid single patient",
-			inputFilePath: "../test/testdata/single_patient.xml",
+			inputFilePath: "../test/testdata/basicpatient/single_patient.xml",
 			expected: []map[string]interface{}{
 				{
 					"ID":          12345,
@@ -403,7 +403,7 @@ func TestParseXML(t *testing.T) {
 		},
 		{
 			name:          "valid multiple patient",
-			inputFilePath: "../test/testdata/multiple_patients.xml",
+			inputFilePath: "../test/testdata/basicpatient/multiple_patients.xml",
 			expected: []map[string]interface{}{
 				{
 					"ID":          12345,
@@ -422,7 +422,7 @@ func TestParseXML(t *testing.T) {
 		},
 		{
 			name:          "invalid xml",
-			inputFilePath: "../test/testdata/invalid_xml.xml",
+			inputFilePath: "../test/testdata/basicpatient/invalid_xml.xml",
 			expected:      nil,
 			expectedErr:   true,
 		},
