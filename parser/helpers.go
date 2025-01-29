@@ -49,38 +49,37 @@ func getFieldValue(field string, record map[string]interface{}, extras map[strin
 	return nil, false
 }
 
-func convertDuration(duration time.Duration, extras map[string]interface{}) (interface{}, error) {
-	unit := "seconds" //default unit
-	if u, ok := extras["unit"]; ok {
-		unit, _ = u.(string)
+func addValues(values []float64) float64 {
+	sum := 0.0
+	for _, val := range values {
+		sum += val
 	}
+	return sum
+}
 
-	switch unit {
-	case "years":
-		years := float64(duration.Hours()) / (365.25 * 24)
-		return years, nil
-	case "months":
-		months := float64(duration.Hours()) / (30.44 * 24)
-		return months, nil
-	case "weeks":
-		weeks := float64(duration.Hours()) / (7 * 24)
-		return weeks, nil
-	case "days":
-		days := duration.Hours() / 24
-		return days, nil
-	case "hours":
-		return duration.Hours(), nil
-	case "minutes":
-		return duration.Minutes(), nil
-	case "seconds":
-		return duration.Seconds(), nil
-	case "milliseconds":
-		return duration.Milliseconds(), nil
-	case "microseconds":
-		return duration.Microseconds(), nil
-	case "nanoseconds":
-		return duration.Nanoseconds(), nil
-	default:
-		return nil, fmt.Errorf("unsupported time unit: %v", unit)
+func subtractValues(values []float64) float64 {
+	result := values[0]
+	for i := 1; i < len(values); i++ {
+		result -= values[i]
 	}
+	return result
+}
+
+func multiplyValues(values []float64) float64 {
+	product := 1.0
+	for _, val := range values {
+		product *= val
+	}
+	return product
+}
+
+func divideValues(values []float64) (float64, error) {
+	result := values[0]
+	for i := 1; i < len(values); i++ {
+		if values[i] == 0 {
+			return 0.0, fmt.Errorf("attempting to divide by 0")
+		}
+		result /= values[i]
+	}
+	return result, nil
 }

@@ -162,15 +162,12 @@ func concatTransformation(record map[string]interface{}, transformation models.T
 }
 
 func calculateTransformation(record map[string]interface{}, transformation models.Transformation) (interface{}, error) {
-	// get operation from extras
 	extras := transformation.Params.Extras
-	// ensure operation is a string
 	operation, ok := extras["operation"].(string)
 	if !ok {
 		return nil, fmt.Errorf("invalid operation")
 	}
 
-	//parse input fields
 	fields := transformation.Params.Fields
 
 	format := "2006-01-02"
@@ -179,49 +176,7 @@ func calculateTransformation(record map[string]interface{}, transformation model
 	}
 
 	if operation == "time_difference" {
-		if len(fields) != 2 {
-			return nil, fmt.Errorf("time_difference requires two values")
-		}
-		startField := fields[0]
-		startDateVal, found := getFieldValue(startField, record, extras)
-		if !found {
-			return nil, fmt.Errorf("field %v not found in xml or in extras", startField)
-		}
-
-		startDateStr, ok := startDateVal.(string)
-		if !ok {
-			return nil, fmt.Errorf("field %v is not a string", startField)
-		}
-
-		startDate, err := time.Parse(format, startDateStr)
-		if err != nil {
-			return nil, fmt.Errorf("unable to parse start date (%v), err %v", startDateStr, err)
-		}
-
-		endField := fields[1]
-		var endDate time.Time
-
-		if endField == "CurrentTime" {
-			endDate = time.Now()
-		} else {
-			endDateVal, found := getFieldValue(endField, record, extras)
-			if !found {
-				return nil, fmt.Errorf("field %v not found in xml or in extras", startField)
-			}
-
-			endDateStr, ok := endDateVal.(string)
-			if !ok {
-				return nil, fmt.Errorf("field %v is not a string", endField)
-			}
-
-			endDate, err = time.Parse(format, endDateStr)
-			if err != nil {
-				return nil, fmt.Errorf("unable to parse end date (%v), err %v", endDateStr, err)
-			}
-		}
-		duration := endDate.Sub(startDate)
-
-		return convertDuration(duration, extras)
+		return calculateTimeDifference(fields, record, extras, format)
 	}
 
 	values := []float64{}
@@ -240,33 +195,98 @@ func calculateTransformation(record map[string]interface{}, transformation model
 	// switch on operation
 	switch operation {
 	case "add":
-		sum := 0.0
-		for _, val := range values {
-			sum += val
-		}
-		return sum, nil
+		return addValues(values), nil
 	case "subtract":
-		result := values[0]
-		for i := 1; i < len(values); i++ {
-			result -= values[i]
-		}
-		return result, nil
+		return subtractValues(values), nil
 	case "multiply":
-		product := 1.0
-		for _, val := range values {
-			product *= val
-		}
-		return product, nil
+		return multiplyValues(values), nil
 	case "divide":
-		result := values[0]
-		for i := 1; i < len(values); i++ {
-			if values[i] == 0 {
-				return nil, fmt.Errorf("attempting to divide by 0")
-			}
-			result /= values[i]
-		}
-		return result, nil
+		return divideValues(values)
 	default:
 		return nil, fmt.Errorf("unsupported operation: %v", operation)
+	}
+}
+
+func parseDate(field string, record map[string]interface{}, extras map[string]interface{}, format string) (time.Time, error) {
+	val, found := getFieldValue(field, record, extras)
+	if !found {
+		return time.Time{}, fmt.Errorf("field %v not found in xml or in extras", field)
+	}
+
+	dateStr, ok := val.(string)
+	if !ok {
+		return time.Time{}, fmt.Errorf("field %v is not a string", field)
+	}
+
+	return time.Parse(format, dateStr)
+}
+
+func calculateTimeDifference(fields []string, record map[string]interface{}, extras map[string]interface{}, format string) (interface{}, error) {
+	if len(fields) != 2 {
+		return nil, fmt.Errorf("time_difference requires two values")
+	}
+	startField := fields[0]
+	startDate, err := parseDate(startField, record, extras, format)
+	if err != nil {
+		return nil, err
+	}
+
+	endField := fields[1]
+	var endDate time.Time
+
+	if endField == "CurrentTime" {
+		endDate = time.Now()
+	} else {
+		endDate, err = parseDate(endField, record, extras, format)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	unit := "seconds" //default unit
+	if u, ok := extras["unit"]; ok {
+		unit, _ = u.(string)
+	}
+
+	return calculateDuration(startDate, endDate, unit, extras)
+}
+
+func calculateDuration(startDate time.Time, endDate time.Time, unit string, extras map[string]interface{}) (interface{}, error) {
+	duration := endDate.Sub(startDate)
+
+	switch unit {
+	case "years":
+		years := endDate.Year() - startDate.Year()
+
+		//check if birthday adjustment is enabled
+		if adjust, ok := extras["adjust_for_birthday"].(bool); ok && adjust {
+			if endDate.YearDay() < startDate.YearDay() {
+				years--
+			}
+		}
+		return years, nil
+	case "months":
+		months := float64(duration.Hours()) / (30.44 * 24)
+		return months, nil
+	case "weeks":
+		weeks := float64(duration.Hours()) / (7 * 24)
+		return weeks, nil
+	case "days":
+		days := duration.Hours() / 24
+		return days, nil
+	case "hours":
+		return duration.Hours(), nil
+	case "minutes":
+		return duration.Minutes(), nil
+	case "seconds":
+		return duration.Seconds(), nil
+	case "milliseconds":
+		return duration.Milliseconds(), nil
+	case "microseconds":
+		return duration.Microseconds(), nil
+	case "nanoseconds":
+		return duration.Nanoseconds(), nil
+	default:
+		return nil, fmt.Errorf("unsupported time unit: %v", unit)
 	}
 }
