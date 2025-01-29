@@ -9,18 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-/*
- TESTS TO ADD:
- - Test different config inputs
-   - changes to input data
-   - changes to output requirements
-   - different transformations
-     - deceased: bool (if DateOfDeath exists)
- - calculations
-    - counting
-    - "last visit" -- return (x months || x days ago)
-*/
-
 func TestConcatTransformation(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -570,66 +558,3 @@ func TestConvertToJSON(t *testing.T) {
 		})
 	}
 }
-
-// // TODO: perhaps create a new testing suite that does more thorough testing
-// func TestConvertToJSON(t *testing.T) {
-// 	tests := []struct {
-// 		name                       string
-// 		configFilePath             string
-// 		inputXMLFilePath           string
-// 		expectedJSONOutputFilePath string
-// 		expectedErr                bool
-// 	}{
-// 		{
-// 			name:                       "provided input and output",
-// 			configFilePath:             "../config/config.json",
-// 			inputXMLFilePath:           "../test/testdata/input.xml",
-// 			expectedJSONOutputFilePath: "../test/testdata/output.json",
-// 			expectedErr:                false,
-// 		},
-// 		{
-// 			name:                       "valid single patient",
-// 			configFilePath:             "../config/config.json",
-// 			inputXMLFilePath:           "../test/testdata/single_patient.xml",
-// 			expectedJSONOutputFilePath: "../test/testdata/single_patient.json",
-// 			expectedErr:                false,
-// 		},
-// 		{
-// 			name:                       "valid multiple patients",
-// 			configFilePath:             "../config/config.json",
-// 			inputXMLFilePath:           "../test/testdata/multiple_patients.xml",
-// 			expectedJSONOutputFilePath: "../test/testdata/multiple_patients.json",
-// 			expectedErr:                false,
-// 		},
-// 		{
-// 			name:                       "invalid date",
-// 			configFilePath:             "../config/config.json",
-// 			inputXMLFilePath:           "../test/testdata/invalid_date.xml",
-// 			expectedJSONOutputFilePath: "../test/testdata/error.json",
-// 			expectedErr:                true,
-// 		},
-// 	}
-// 	for _, test := range tests {
-// 		t.Run(test.name, func(t *testing.T) {
-// 			config, err := config.LoadFile(test.configFilePath)
-// 			require.NoError(t, err)
-
-// 			xmlData, err := os.ReadFile(test.inputXMLFilePath)
-// 			require.NoError(t, err)
-
-// 			xmlPatients, err := ParseXML(xmlData)
-// 			require.NoError(t, err)
-
-// 			actual, err := ConvertToJSON(xmlPatients, config)
-// 			if test.expectedErr {
-// 				require.Error(t, err)
-// 				require.Nil(t, actual)
-// 			} else {
-// 				require.NoError(t, err)
-// 				expectedJSON, err := os.ReadFile(test.expectedJSONOutputFilePath)
-// 				require.NoError(t, err)
-// 				require.JSONEq(t, string(expectedJSON), string(actual))
-// 			}
-// 		})
-// 	}
-// }

@@ -10,6 +10,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+/*
+ TO DO:
+ - add additional tests using different configs and input
+
+ TESTS TO ADD:
+ - Test different config inputs
+   - changes to input data
+   - changes to output requirements
+   - different transformations
+     - deceased: bool (if DateOfDeath exists)
+ - calculations
+    - counting
+    - "last visit" -- return (x months || x days ago)
+*/
+
 func TestEndToEnd(t *testing.T) {
 	tests := []struct {
 		name             string
@@ -19,9 +34,21 @@ func TestEndToEnd(t *testing.T) {
 	}{
 		{
 			name:             "provided input and output",
-			configPath:       "../../config/config.json",
+			configPath:       "../testdata/config.json",
 			inputXMLPath:     "../testdata/input.xml",
 			expectedJSONPath: "../testdata/output.json",
+		},
+		{
+			name:             "valid single patient",
+			configPath:       "../testdata/config.json",
+			inputXMLPath:     "../testdata/single_patient.xml",
+			expectedJSONPath: "../testdata/single_patient.json",
+		},
+		{
+			name:             "valid multiple patients",
+			configPath:       "../testdata/config.json",
+			inputXMLPath:     "../testdata/multiple_patients.xml",
+			expectedJSONPath: "../testdata/multiple_patients.json",
 		},
 	}
 
