@@ -145,10 +145,10 @@ FooBar, WI
 	}
 }
 
-// func TestCalculateTransformation(t *testing.T) {
-// 	tests := []struct {
-// 	}{}
-// }
+func TestCalculateTransformation(t *testing.T) {
+	// tests := []struct {
+	// }{}
+}
 
 // func TestTranslateAge(t *testing.T) {
 // 	tests := []struct {

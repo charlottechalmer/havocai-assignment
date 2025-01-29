@@ -48,3 +48,39 @@ func getFieldValue(field string, record map[string]interface{}, extras map[strin
 	}
 	return nil, false
 }
+
+func convertDuration(duration time.Duration, extras map[string]interface{}) (interface{}, error) {
+	unit := "seconds" //default unit
+	if u, ok := extras["unit"]; ok {
+		unit, _ = u.(string)
+	}
+
+	switch unit {
+	case "years":
+		years := float64(duration.Hours()) / (365.25 * 24)
+		return years, nil
+	case "months":
+		months := float64(duration.Hours()) / (30.44 * 24)
+		return months, nil
+	case "weeks":
+		weeks := float64(duration.Hours()) / (7 * 24)
+		return weeks, nil
+	case "days":
+		days := duration.Hours() / 24
+		return days, nil
+	case "hours":
+		return duration.Hours(), nil
+	case "minutes":
+		return duration.Minutes(), nil
+	case "seconds":
+		return duration.Seconds(), nil
+	case "milliseconds":
+		return duration.Milliseconds(), nil
+	case "microseconds":
+		return duration.Microseconds(), nil
+	case "nanoseconds":
+		return duration.Nanoseconds(), nil
+	default:
+		return nil, fmt.Errorf("unsupported time unit: %v", unit)
+	}
+}
