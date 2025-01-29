@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	xmlPath, configPath := cmdutil.ValidateFlags()
+	xmlPath, configPath, outputPath := cmdutil.ValidateFlags()
 
 	config, err := config.LoadFile(configPath)
 	if err != nil {
@@ -32,15 +32,17 @@ func main() {
 		cmdutil.FatalError("error converting to JSON: %+v\n", err)
 	}
 
-	outputDir, err := fileutil.GetOutputPath()
-	if err != nil {
-		cmdutil.FatalError("error determining output path: %+v\n", err)
+	if outputPath == "" {
+		outputPath, err = fileutil.GetOutputPath()
+		if err != nil {
+			cmdutil.FatalError("error determining output path: %+v\n", err)
+		}
 	}
 
-	err = fileutil.WriteToFile(outputDir, jsonPatients)
+	err = fileutil.WriteToFile(outputPath, jsonPatients)
 	if err != nil {
 		cmdutil.FatalError("error writing output to file: %+v\n", err)
 	}
 
-	fmt.Printf("Successfully converted XML data to JSON. Output written to: %v\n", outputDir)
+	fmt.Printf("Successfully converted XML data to JSON. Output written to: %v\n", outputPath)
 }

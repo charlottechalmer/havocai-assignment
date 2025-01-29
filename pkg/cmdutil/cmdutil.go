@@ -12,9 +12,11 @@ func FatalError(msg string, err error) {
 	os.Exit(1)
 }
 
-func ValidateFlags() (string, string) {
+func ValidateFlags() (string, string, string) {
 	xmlFilePath := flag.String("xml", "", "path to XML input file")
 	configFilePath := flag.String("config", "", "path to config file")
+	outputFilePath := flag.String("output", "", "Optional: path to output JSON file")
+
 	flag.Parse()
 
 	if *xmlFilePath == "" || *configFilePath == "" {
@@ -33,5 +35,13 @@ func ValidateFlags() (string, string) {
 		FatalError("error resolving config file path: %+v\n", err)
 	}
 
-	return absXMLPath, absConfigPath
+	var absOutputPath string
+	if *outputFilePath != "" {
+		absOutputPath, err = filepath.Abs(filepath.Clean(*outputFilePath))
+		if err != nil {
+			FatalError("error resolving output file path: %+v\n", err)
+		}
+	}
+
+	return absXMLPath, absConfigPath, absOutputPath
 }
