@@ -191,6 +191,27 @@ func TestMathOperations(t *testing.T) {
 			expected:    0,
 			expectedErr: true,
 		},
+		{
+			name:        "modulo",
+			operation:   "modulo",
+			values:      []float64{11.0, 2.0},
+			expected:    1.0,
+			expectedErr: false,
+		},
+		{
+			name:        "modulo with too many values",
+			operation:   "modulo",
+			values:      []float64{11.0, 2.0, 2.0},
+			expected:    0.0,
+			expectedErr: true,
+		},
+		{
+			name:        "modulo with zero value",
+			operation:   "modulo",
+			values:      []float64{11.0, 0.0},
+			expected:    0.0,
+			expectedErr: true,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -206,6 +227,8 @@ func TestMathOperations(t *testing.T) {
 				actual = multiplyValues(test.values)
 			case "divide":
 				actual, err = divideValues(test.values)
+			case "modulo":
+				actual, err = modValues(test.values)
 			}
 			if test.expectedErr {
 				require.Error(t, err)

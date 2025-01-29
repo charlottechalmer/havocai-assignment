@@ -27,7 +27,7 @@
                     "operation": "time_difference",
                     "format": "2006-01-02",
                     "unit": "years",
-                    "adjust_for_birthday": true
+                    "adjust_if_day_not_passed": true
                 }
             }
         }

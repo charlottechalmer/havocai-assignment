@@ -151,49 +151,248 @@ FooBar, WI
 }
 
 func TestCalculateTransformation(t *testing.T) {
-	// tests := []struct {
-	// }{}
-}
+	tests := []struct {
+		name           string
+		record         map[string]interface{}
+		transformation models.Transformation
+		expected       interface{}
+		expectedErr    bool
+	}{
+		{
+			name: "Addition",
+			record: map[string]interface{}{
+				"Field1": 10,
+				"Field2": 20,
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Field1",
+						"Field2",
+					},
+					Extras: map[string]interface{}{
+						"operation": "add",
+					},
+				},
+			},
+			expected:    30.0,
+			expectedErr: false,
+		},
+		{
+			name: "Subtraction",
+			record: map[string]interface{}{
+				"Field1": 50,
+				"Field2": 20,
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Field1",
+						"Field2",
+					},
+					Extras: map[string]interface{}{
+						"operation": "subtract",
+					},
+				},
+			},
+			expected:    30.0,
+			expectedErr: false,
+		},
+		{
+			name: "Multiplication",
+			record: map[string]interface{}{
+				"Field1": 5,
+				"Field2": 4,
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Field1",
+						"Field2",
+					},
+					Extras: map[string]interface{}{
+						"operation": "multiply",
+					},
+				},
+			},
+			expected:    20.0,
+			expectedErr: false,
+		},
+		{
+			name: "Division",
+			record: map[string]interface{}{
+				"Field1": 20,
+				"Field2": 4,
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Field1",
+						"Field2",
+					},
+					Extras: map[string]interface{}{
+						"operation": "divide",
+					},
+				},
+			},
+			expected:    5.0,
+			expectedErr: false,
+		},
+		{
+			name: "Modulo",
+			record: map[string]interface{}{
+				"Field1": 20,
+				"Field2": 3,
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Field1",
+						"Field2",
+					},
+					Extras: map[string]interface{}{
+						"operation": "modulo",
+					},
+				},
+			},
+			expected:    2.0,
+			expectedErr: false,
+		},
+		{
+			name: "Time difference in days",
+			record: map[string]interface{}{
+				"Start": "2025-01-05",
+				"End":   "2025-01-29",
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Start",
+						"End",
+					},
+					Extras: map[string]interface{}{
+						"operation": "time_difference",
+						"format":    "2006-01-02",
+						"unit":      "days",
+					},
+				},
+			},
+			expected:    24.0,
+			expectedErr: false,
+		},
+		{
+			name: "Time difference in days, no format specified",
+			record: map[string]interface{}{
+				"Start": "2025-01-05T00:00:00Z",
+				"End":   "2025-02-05T00:00:00Z",
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Start",
+						"End",
+					},
+					Extras: map[string]interface{}{
+						"operation": "time_difference",
+						"unit":      "days",
+					},
+				},
+			},
+			expected:    31.0,
+			expectedErr: false,
+		},
+		{
+			name: "Time difference in seconds",
+			record: map[string]interface{}{
+				"Start": "2025-01-05T00:00:00",
+				"End":   "2025-01-05T00:01:00",
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Start",
+						"End",
+					},
+					Extras: map[string]interface{}{
+						"operation": "time_difference",
+						"format":    "2006-01-02T15:04:05",
+						"unit":      "seconds",
+					},
+				},
+			},
+			expected:    60.0,
+			expectedErr: false,
+		},
+		{
+			name: "Time difference in weeks, rounded to int",
+			record: map[string]interface{}{
+				"Start": "2025-01-05",
+				"End":   "2025-03-05",
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Start",
+						"End",
+					},
+					Extras: map[string]interface{}{
+						"operation":    "time_difference",
+						"format":       "2006-01-02",
+						"unit":         "weeks",
+						"round_to_int": true,
+					},
+				},
+			},
+			expected:    8,
+			expectedErr: false,
+		},
+		{
+			name: "Time difference in months, with decimal precision",
+			record: map[string]interface{}{
+				"Start": "2025-01-05",
+				"End":   "2025-03-05",
+			},
+			transformation: models.Transformation{
+				Type: "calculate",
+				Params: models.Params{
+					Fields: []string{
+						"Start",
+						"End",
+					},
+					Extras: map[string]interface{}{
+						"operation":         "time_difference",
+						"format":            "2006-01-02",
+						"unit":              "months",
+						"decimal_precision": 3,
+					},
+				},
+			},
+			expected:    1.938,
+			expectedErr: false,
+		},
+	}
 
-// func TestTranslateAge(t *testing.T) {
-// 	tests := []struct {
-// 		name        string
-// 		dateOfBirth string
-// 		expected    int
-// 		expectedErr bool
-// 	}{
-// 		{
-// 			name:        "valid date of birth, birthday not yet passed this year",
-// 			dateOfBirth: "1993-07-06",
-// 			expected:    time.Now().Year() - 1993 - 1,
-// 			expectedErr: false,
-// 		},
-// 		{
-// 			name:        "valid date of birth, birthday has passed this year",
-// 			dateOfBirth: "1993-01-20",
-// 			expected:    time.Now().Year() - 1993,
-// 			expectedErr: false,
-// 		},
-// 		{
-// 			name:        "valid date of birth, birthday is today",
-// 			dateOfBirth: time.Now().Format("2006-01-02"),
-// 			expected:    0,
-// 			expectedErr: false,
-// 		},
-// 	}
-// 	for _, test := range tests {
-// 		t.Run(test.name, func(t *testing.T) {
-// 			actual, err := translateAge(test.dateOfBirth)
-// 			if test.expectedErr {
-// 				require.Error(t, err)
-// 				require.Equal(t, 0, actual)
-// 			} else {
-// 				require.NoError(t, err)
-// 				require.Equal(t, test.expected, actual)
-// 			}
-// 		})
-// 	}
-// }
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			actual, err := calculateTransformation(test.record, test.transformation)
+			if test.expectedErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, test.expected, actual)
+			}
+		})
+	}
+}
 
 func TestParseXML(t *testing.T) {
 	tests := []struct {

@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"havocai-assignment/models"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -166,7 +167,7 @@ func calculateTransformation(record map[string]interface{}, transformation model
 
 	fields := transformation.Params.Fields
 
-	format := "2006-01-02"
+	format := time.RFC3339
 	if formatIface, ok := extras["format"]; ok {
 		format, _ = formatIface.(string)
 	}
@@ -198,6 +199,8 @@ func calculateTransformation(record map[string]interface{}, transformation model
 		return multiplyValues(values), nil
 	case "divide":
 		return divideValues(values)
+	case "modulo":
+		return modValues(values)
 	default:
 		return nil, fmt.Errorf("unsupported operation: %v", operation)
 	}
@@ -224,6 +227,7 @@ func calculateTimeDifference(fields []string, record map[string]interface{}, ext
 	startField := fields[0]
 	startDate, err := parseDate(startField, record, extras, format)
 	if err != nil {
+		fmt.Println("err here")
 		return nil, err
 	}
 
@@ -248,41 +252,50 @@ func calculateTimeDifference(fields []string, record map[string]interface{}, ext
 }
 
 func calculateDuration(startDate time.Time, endDate time.Time, unit string, extras map[string]interface{}) (interface{}, error) {
+	var result float64
 	duration := endDate.Sub(startDate)
 
 	switch unit {
 	case "years":
-		years := endDate.Year() - startDate.Year()
+		result = float64(endDate.Year() - startDate.Year())
 
-		//check if birthday adjustment is enabled
-		if adjust, ok := extras["adjust_for_birthday"].(bool); ok && adjust {
+		//check if need to adjust if day in question has not passed yet this year
+		if adjust, ok := extras["adjust_if_day_not_passed"].(bool); ok && adjust {
 			if endDate.YearDay() < startDate.YearDay() {
-				years--
+				result--
 			}
 		}
-		return years, nil
+		return result, nil
 	case "months":
-		months := float64(duration.Hours()) / (30.44 * 24)
-		return months, nil
+		result = duration.Hours() / (30.44 * 24)
 	case "weeks":
-		weeks := float64(duration.Hours()) / (7 * 24)
-		return weeks, nil
+		result = duration.Hours() / (7 * 24)
 	case "days":
-		days := duration.Hours() / 24
-		return days, nil
+		result = duration.Hours() / 24
 	case "hours":
-		return duration.Hours(), nil
+		result = duration.Hours()
 	case "minutes":
-		return duration.Minutes(), nil
+		result = duration.Minutes()
 	case "seconds":
-		return duration.Seconds(), nil
+		result = duration.Seconds()
 	case "milliseconds":
-		return duration.Milliseconds(), nil
+		result = float64(duration.Milliseconds())
 	case "microseconds":
-		return duration.Microseconds(), nil
+		result = float64(duration.Microseconds())
 	case "nanoseconds":
-		return duration.Nanoseconds(), nil
+		result = float64(duration.Nanoseconds())
 	default:
 		return nil, fmt.Errorf("unsupported time unit: %v", unit)
 	}
+
+	if precision, ok := extras["decimal_precision"].(int); ok {
+		multiplier := math.Pow(10, float64(precision))
+		return math.Round(result*multiplier) / multiplier, nil
+	}
+
+	if round, ok := extras["round_to_int"].(bool); ok && round {
+		return int(math.Round(result)), nil
+	}
+
+	return result, nil
 }

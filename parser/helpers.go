@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 	"time"
@@ -82,4 +83,14 @@ func divideValues(values []float64) (float64, error) {
 		result /= values[i]
 	}
 	return result, nil
+}
+
+func modValues(values []float64) (float64, error) {
+	if len(values) != 2 {
+		return 0.0, fmt.Errorf("modulo requires exactly 2 inputs")
+	}
+	if values[1] == 0 {
+		return 0.0, fmt.Errorf("modulo by zero is undefined")
+	}
+	return math.Mod(values[0], values[1]), nil
 }
