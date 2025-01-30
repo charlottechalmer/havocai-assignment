@@ -1,0 +1,47 @@
+{
+    "root": "patients",
+    "mappings": {
+        "ID": "id"
+    },
+    "transformations": {
+        "name": {
+            "type": "concat",
+            "params": {
+                "fields": [
+                    "FirstName",
+                    "LastName"
+                ],
+                "extras": {
+                    "separator": " "
+                }
+            }
+        },
+        "address": {
+            "type": "concat",
+            "params": {
+                "fields": [
+                    "Address"
+                ],
+                "extras": {
+                    "separator": "\n",
+                    "nested": true
+                }
+            }
+        },
+        "age": {
+            "type": "calculate",
+            "params": {
+                "fields": [
+                    "DateOfBirth",
+                    "CurrentTime"
+                ],
+                "extras": {
+                    "operation": "time_difference",
+                    "format": "2006-01-02",
+                    "unit": "years",
+                    "adjust_if_day_not_passed": true
+                }
+            }
+        }
+    }
+}

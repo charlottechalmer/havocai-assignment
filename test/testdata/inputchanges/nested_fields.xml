@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patients>
+    <Patient ID="12345">
+        <FirstName>John</FirstName>
+        <LastName>Doe</LastName>
+        <Address>
+          <Street>123 Havoc Way</Street>
+          <CityState>Providence, RI</CityState>
+          <ZipCode>02860</ZipCode>
+        </Address>
+        <DateOfBirth>1985-07-15</DateOfBirth>
+    </Patient>
+    <Patient ID="67890">
+        <FirstName>Jane</FirstName>
+        <LastName>Smith</LastName>
+        <Address>
+          <Street>888 Reginald Ave</Street>
+          <Unit>Apartment 123</Unit>
+          <CityState>Muskegon, KY</CityState>
+          <ZipCode>12482</ZipCode>
+        </Address>
+        <DateOfBirth>1992-03-22</DateOfBirth>
+    </Patient>
+</Patients>

@@ -1,0 +1,16 @@
+{
+    "patients": [
+        {
+            "id": 12345,
+            "name": "John Doe",
+            "age": 39,
+            "address": "123 Havoc Way\nProvidence, RI\n02860"
+        },
+        {
+            "id": 67890,
+            "name": "Jane Smith",
+            "age": 32,
+            "address": "888 Reginald Ave\nApartment 123\nMuskegon, KY\n"
+        }
+    ]
+}

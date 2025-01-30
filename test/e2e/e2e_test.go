@@ -17,16 +17,19 @@ import (
  TESTS TO ADD:
  - Test different config inputs
    - changes to input data
-       - fields are added
-           - new 1:1 mappings
-           - new transformations
-               - bool condition; if DateOfDeath exists --> deceased:true
-               - calculation; "last visit" --> x months ago
-               - counting: nested elements --> "number_of_allergies"
-       - fields are renamed
        - nested structures are added (address)
-       - format of data might change (DOB -- DD-MM-YYY)
+       - fields are renamed
        - root element changes
+       - new transformations
+           - formatting --
+                - phone numbers: 888-555-1234 --> (888)555-1234
+                - date format (DOB --> DD-MM-YYY)
+                - padding numbers
+                - numbers to money: 1000.5 --> $1000.50
+           - categorizing based on other fields; age: 17 --> category: minor
+           - bool condition; if DateOfDeath exists --> deceased:true
+           - calculation; "last visit" --> x months ago
+           - counting: nested elements --> "number_of_allergies"
    - changes to output requirements
        - field names change
        - output becomes more nested(e.g contact info, medical info)
@@ -64,6 +67,12 @@ func TestEndToEnd(t *testing.T) {
 			configPath:       "../testdata/inputchanges/new_fields_config.json",
 			inputXMLPath:     "../testdata/inputchanges/new_fields.xml",
 			expectedJSONPath: "../testdata/inputchanges/new_fields.json",
+		},
+		{
+			name:             "new fields are added - nested structure",
+			configPath:       "../testdata/inputchanges/nested_fields_config.json",
+			inputXMLPath:     "../testdata/inputchanges/nested_fields.xml",
+			expectedJSONPath: "../testdata/inputchanges/nested_fields.json",
 		},
 	}
 
