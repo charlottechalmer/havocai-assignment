@@ -14,7 +14,7 @@ import (
 
 func ParseXML(input []byte) (map[string]interface{}, error) {
 	decoder := xml.NewDecoder(bytes.NewReader(input))
-	var results map[string]interface{}
+	results := make(map[string]interface{})
 	elemContentStack := &Stack{}
 	elemNameStack := []string{}
 	content := ""
@@ -60,9 +60,21 @@ func ParseXML(input []byte) (map[string]interface{}, error) {
 			}
 			// reset content
 			content = ""
-			// TODO need to figure out how to populate and handle nested data
+			if !elemContentStack.IsEmpty() {
+				// if content stack is not empty but we are within an end element, then we are within a nested structure. need to determine the parent
+				parent := elemContentStack.Peek()
+				currElemName := t.Name.Local
+
+				//add current elem as a new field on the existing parent
+				parent[currElemName] = lastElem
+			} else {
+				//otherwise, the stack is empty, we are at the root element, set to result
+				results[t.Name.Local] = lastElem
+			}
+
 		}
 	}
+	return results, nil
 
 }
 
@@ -82,17 +94,18 @@ func parseValue(val string) interface{} {
 	return val
 }
 
-func ConvertToJSON(input []map[string]interface{}, cfg *models.Config) ([]byte, error) {
-	transformedInput, err := applyTransformations(input, cfg)
-	if err != nil {
-		return nil, err
-	}
+func ConvertToJSON(input map[string]interface{}, cfg *models.Config) ([]byte, error) {
+	// transformedInput, err := applyTransformations(input, cfg)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	wrappedOutput := map[string]interface{}{
-		cfg.RootName: transformedInput,
-	}
+	// wrappedOutput := map[string]interface{}{
+	// 	cfg.RootName: transformedInput,
+	// }
 
-	jsonOutput, err := json.MarshalIndent(wrappedOutput, "", "  ")
+	// jsonOutput, err := json.MarshalIndent(wrappedOutput, "", "  ")
+	jsonOutput, err := json.MarshalIndent(input, "", "  ")
 	if err != nil {
 		return nil, err
 	}

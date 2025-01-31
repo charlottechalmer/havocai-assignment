@@ -5,7 +5,6 @@ import (
 	"havocai-assignment/config"
 	"havocai-assignment/parser"
 	"havocai-assignment/pkg/cmdutil"
-	"havocai-assignment/pkg/fileutil"
 	"os"
 )
 
@@ -33,18 +32,20 @@ func main() {
 	if err != nil {
 		cmdutil.FatalError("error converting to JSON: %+v\n", err)
 	}
+	fmt.Printf("%+v\n", string(jsonPatients))
 
 	if outputPath == "" {
-		outputPath, err = fileutil.GetOutputPath()
-		if err != nil {
-			cmdutil.FatalError("error determining output path: %+v\n", err)
-		}
+		fmt.Println("")
+		// outputPath, err = fileutil.GetOutputPath()
+		// if err != nil {
+		// 	cmdutil.FatalError("error determining output path: %+v\n", err)
+		// }
 	}
 
-	err = fileutil.WriteToFile(outputPath, jsonPatients)
-	if err != nil {
-		cmdutil.FatalError("error writing output to file: %+v\n", err)
-	}
+	// err = fileutil.WriteToFile(outputPath, jsonPatients)
+	// if err != nil {
+	// 	cmdutil.FatalError("error writing output to file: %+v\n", err)
+	// }
 
-	fmt.Printf("Successfully converted XML data to JSON. Output written to: %v\n", outputPath)
+	// fmt.Printf("Successfully converted XML data to JSON. Output written to: %v\n", outputPath)
 }
