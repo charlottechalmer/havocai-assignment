@@ -27,8 +27,6 @@ func main() {
 		cmdutil.FatalError("error parsing XML: %+v\n", err)
 	}
 
-	fmt.Printf("\n\nXML: %+v\n\n", xmlPatients)
-
 	jsonPatients, err := parser.ConvertToJSON(xmlPatients, config)
 	if err != nil {
 		cmdutil.FatalError("error converting to JSON: %+v\n", err)
