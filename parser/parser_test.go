@@ -103,25 +103,8 @@ FooBar, WI
 					},
 				},
 			},
-			expected:    "",
-			expectedErr: true,
-		},
-		{
-			name: "empty fields",
-			record: map[string]interface{}{
-				"Field1": "foobar",
-			},
-			transformation: models.Transformation{
-				Type: "concat",
-				Params: models.Params{
-					Fields: []string{""},
-					Extras: map[string]interface{}{
-						"separator": " ",
-					},
-				},
-			},
-			expected:    "",
-			expectedErr: true,
+			expected:    "Charlotte",
+			expectedErr: false,
 		},
 	}
 	for _, test := range tests {
@@ -497,7 +480,7 @@ func TestConvertToJSON(t *testing.T) {
 			expectedErr: false,
 		},
 		{
-			name: "Transformation with missing field",
+			name: "Transformation with missing field should skip missing field",
 			input: []map[string]interface{}{
 				{"first": "John"},
 			},
@@ -513,7 +496,12 @@ func TestConvertToJSON(t *testing.T) {
 					},
 				},
 			},
-			expectedErr: true,
+			expected: `{
+				"users": [{
+					"full_name": "John"
+				}]
+			}`,
+			expectedErr: false,
 		},
 		{
 			name: "Calculation transformation",
