@@ -12,15 +12,12 @@ import (
 	"time"
 )
 
-func ParseXML(input []byte) ([]map[string]interface{}, error) {
+func ParseXML(input []byte) (map[string]interface{}, error) {
 	decoder := xml.NewDecoder(bytes.NewReader(input))
-	var results []map[string]interface{}
-
-	// to track current data within loop
-	currentData := make(map[string]interface{})
-	currentElementName := ""
-	//track nesting to determine when to exit a grouping
-	level := 0
+	var results map[string]interface{}
+	elemContentStack := &Stack{}
+	elemNameStack := []string{}
+	content := ""
 
 	for {
 		token, err := decoder.Token()
@@ -34,34 +31,39 @@ func ParseXML(input []byte) ([]map[string]interface{}, error) {
 
 		switch t := token.(type) {
 		case xml.StartElement:
-			// when we encounter a start element, want to increment level (noting we are within an element) and track the current element name
-			level++
-			currentElementName = t.Name.Local
-
-			// need to handle scenario where a start element has attributes
+			// if its a start element, create a new instance of an element and then add to both content stack and name stack
+			// process nodes with attributes first
+			currElem := make(map[string]interface{})
 			for _, attr := range t.Attr {
-				currentData[attr.Name.Local] = parseValue(attr.Value)
+				currElem[attr.Name.Local] = parseValue(attr.Value)
 			}
-		case xml.EndElement:
-			// when we encounter an end element, want to decrease level (exiting an element) and then append data to results and reset currentData and currentElementName
-			level--
-
-			// if level == 1, we are at the end of a grouping
-			if level == 1 {
-				results = append(results, currentData)
-				currentData = make(map[string]interface{})
-			}
-
-			currentElementName = ""
+			elemNameStack = append(elemNameStack, t.Name.Local)
+			elemContentStack.Push(currElem)
 		case xml.CharData:
-			// when we encounter CharData, store the character data at the current element
-			content := strings.TrimSpace(string(t))
-			if currentElementName != "" && content != "" {
-				currentData[currentElementName] = parseValue(content)
+			// if it is char data, set content to the content
+			content = strings.TrimSpace(string(t))
+		case xml.EndElement:
+			// if its an end element, we need some way to associate the last content in the stack to the name of the element being closed. pop last item off of both content stack as well as name stack
+			lastElem := elemContentStack.Pop()
+			elemNameStack = elemNameStack[:len(elemNameStack)-1]
+
+			// if the current element has content
+			if content != "" {
+				// check if the element has other data in it
+				if len(lastElem) == 0 {
+					lastElem = map[string]interface{}{"dummy": parseValue(content)}
+				} else {
+					// it has other data, add dummy key to existing map
+					lastElem["dummy"] = parseValue(content)
+				}
+
 			}
+			// reset content
+			content = ""
+			// TODO need to figure out how to populate and handle nested data
 		}
 	}
-	return results, nil
+
 }
 
 func parseValue(val string) interface{} {
