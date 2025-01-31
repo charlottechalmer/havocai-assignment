@@ -1,7 +1,0 @@
-<Patients>
-  <Patient ID="98765">
-    <FirstName>Invalid</FirstName>
-    <LastName>Patient</LastName>
-    <DateOfBirth>invalid-date</DateOfBirth>
-  </Patient>
-</Patients>

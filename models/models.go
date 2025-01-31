@@ -1,25 +1,17 @@
 package models
 
-import "encoding/xml"
-
-type XMLPatients struct {
-	XMLName  xml.Name     `xml:"Patients"`
-	Patients []XMLPatient `xml:"Patient"`
+type Config struct {
+	RootName        string                    `json:"root"`
+	Mappings        map[string]string         `json:"mappings"`
+	Transformations map[string]Transformation `json:"transformations"`
 }
 
-type XMLPatient struct {
-	ID          int    `xml:"ID,attr"`
-	FirstName   string `xml:"FirstName"`
-	LastName    string `xml:"LastName"`
-	DateOfBirth string `xml:"DateOfBirth"`
+type Transformation struct {
+	Type   string `json:"type"`
+	Params Params `json:"params"`
 }
 
-type JSONPatients struct {
-	Patients []JSONPatient `json:"patients"`
-}
-
-type JSONPatient struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+type Params struct {
+	Fields []string               `json:"fields"`
+	Extras map[string]interface{} `json:"extras"`
 }
