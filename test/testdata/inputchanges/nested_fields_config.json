@@ -20,11 +20,13 @@
             "type": "concat",
             "params": {
                 "fields": [
-                    "Address"
+                    "Street",
+                    "Unit",
+                    "CityState",
+                    "ZipCode"
                 ],
                 "extras": {
-                    "separator": "\n",
-                    "nested": true
+                    "separator": "\n"
                 }
             }
         },

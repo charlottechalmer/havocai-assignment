@@ -140,7 +140,7 @@ func concatTransformation(record map[string]interface{}, transformation models.T
 	for _, field := range fields {
 		value, ok := record[field]
 		if !ok {
-			return "", fmt.Errorf("field %v not found in input", field)
+			continue
 		}
 
 		strVal := fmt.Sprintf("%v", value)
