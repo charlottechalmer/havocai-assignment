@@ -65,6 +65,10 @@ func ParseXML(input []byte) ([]map[string]interface{}, error) {
 }
 
 func parseValue(val string) interface{} {
+	if len(val) > 1 && val[0] == '0' {
+		return val
+	}
+
 	if intVal, err := strconv.Atoi(val); err == nil {
 		return intVal
 	}
